@@ -24,16 +24,18 @@ $sql= 'SELECT * FROM `posts` ORDER BY `created` DESC';
 $stmt= $dbh->prepare($sql);
   $stmt->execute();
 
+  $data= array();
+
+
   while (1) {
     $rec= $stmt->fetch(PDO::FETCH_ASSOC);
     if ($rec==false){
       break;
     }
-    echo $rec['nickname'];
-    echo $rec['comment'];
-    echo $rec['created'];
-    echo '<br>';
-  }
+//格納用変数にレコードのでアーを入れる
+    $data[]= $rec;
+ }
+
 
 //DBを切断
 $dbh= null;
@@ -107,6 +109,7 @@ $dbh= null;
       <!-- 画面右側 -->
       <div class="col-md-8 content-margin-top">
         <div class="timeline-centered">
+        <?php foreach ($data as $d): ?>
           <article class="timeline-entry">
               <div class="timeline-entry-inner">
                   <div class="timeline-icon bg-success">
@@ -114,11 +117,21 @@ $dbh= null;
                       <i class="fa fa-cogs"></i>
                   </div>
                   <div class="timeline-label">
-                      <h2><a href="#">seedくん</a> <span>2016-01-20</span></h2>
-                      <p>つぶやいたコメント</p>
+                  <!-- 1 文字列型から日付け型へ -->
+                  　<?php
+                     $created= strtotime($d['created']);
+                   
+                   //2 フォーマットを措定
+                   $created= date('Y/m/d', $created);
+
+                   ?>
+
+                      <h2><a href="#"><?php echo $d['nickname']; ?></a> <span><?php echo $created;?></span></h2>
+                      <p><?php echo $d['comment'];?></p>
                   </div>
               </div>
           </article>
+        <?php endforeach; ?>
 
           <article class="timeline-entry begin">
               <div class="timeline-entry-inner">
