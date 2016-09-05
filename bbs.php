@@ -1,12 +1,12 @@
 <?php
   // ここにDBに登録する処理を記述する
 //1 DBへ接続
-$dsn= 'mysql:dbname=;host=LAA0778973-onelinebbs;host=mysql114.phy.lolipop.lan';
-  $user= 'LAA0778973';
-  $password= '19900608jS';
-// $dsn= 'mysql:dbname=onelinebbs;host=localhost';
-// $user= 'root';
-// $password='';
+// $dsn= 'mysql:dbname=;host=LAA0778973-onelinebbs;host=mysql114.phy.lolipop.lan';
+//   $user= 'LAA0778973';
+//   $password= '19900608jS';
+$dsn= 'mysql:dbname=oneline_bbs;host=localhost';
+$user= 'root';
+$password='';
   $dbh= new PDO($dsn, $user, $password);
   $dbh->query('SET NAMES utf8');
 
@@ -44,7 +44,7 @@ $data[]= $POST['id'];
 
 }else{
 //データ登録
-$sql = 'INSERT INTO `posts`(`nickname`, `comment`, `created`) VALUES (?,?,now())';
+$sql = 'INSERT INTO `posts`(`nickname`, `comment`, `created`, `delete_flag`) VALUES (?,?,now(),0)';
 $data[]= $_POST['nickname'];
 $data[]= $_POST['comment'];
    }
@@ -58,7 +58,8 @@ $stmt= $dbh->prepare($sql);
 //////////////////////////////////
 //データの削除処理
 if (!empty($_GET['action'])&& $_GET['action']== 'delete'){
-$sql='DELETE FROM `posts` WHERE `id`=?';
+// $sql='DELETE FROM `posts` WHERE `id`=?';
+$sql= 'UPDATE `posts` SET `delete_flag`= 1 WHERE `id`=?';
 $data[]= $_GET['id'];
 
 //SQLを実行
@@ -74,7 +75,7 @@ exit();
 
 ////////////////////////////////////
 //データの一覧表示
-$sql= 'SELECT * FROM `posts` ORDER BY `created` DESC';
+$sql= 'SELECT * FROM `posts` WHERE `delete_flag`= 0 ORDER BY `created` DESC';
 //SQLを実行
 $stmt= $dbh->prepare($sql);
   $stmt->execute();
